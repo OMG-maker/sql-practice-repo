@@ -1,40 +1,39 @@
 -- 코드를 입력하세요
-SELECT CAR_ID,
-    CASE 
-        WHEN COUNT(CASE WHEN '2022-10-16' BETWEEN START_DATE AND END_DATE THEN 1 END) > 0 THEN '대여중'
-        ELSE '대여 가능'
-    END AS AVAILABILITY
-FROM CAR_RENTAL_COMPANY_RENTAL_HISTORY
-GROUP BY CAR_ID
-ORDER BY CAR_ID DESC
+SELECT CAR_TYPE, COUNT(*) AS CARS
+FROM CAR_RENTAL_COMPANY_CAR
+WHERE OPTIONS LIKE '%통풍시트%' OR OPTIONS LIKE '%열선시트%' OR OPTIONS LIKE '%가죽시트%'
+GROUP BY CAR_TYPE
+ORDER BY CAR_TYPE ASC
 
--- CASE, WHEN, END, COUNT 사용법을 알아간다.
+
+-- WHERE 절에서 LIKE 과 OR 방법 확인하고 넘어가기
+
 
 -- 문제 설명
--- 다음은 어느 자동차 대여 회사의 자동차 대여 기록 정보를 담은 CAR_RENTAL_COMPANY_RENTAL_HISTORY 테이블입니다. CAR_RENTAL_COMPANY_RENTAL_HISTORY 테이블은 아래와 같은 구조로 되어있으며, HISTORY_ID, CAR_ID, START_DATE, END_DATE 는 각각 자동차 대여 기록 ID, 자동차 ID, 대여 시작일, 대여 종료일을 나타냅니다.
+-- 다음은 어느 자동차 대여 회사에서 대여중인 자동차들의 정보를 담은 CAR_RENTAL_COMPANY_CAR 테이블입니다. CAR_RENTAL_COMPANY_CAR 테이블은 아래와 같은 구조로 되어있으며, CAR_ID, CAR_TYPE, DAILY_FEE, OPTIONS 는 각각 자동차 ID, 자동차 종류, 일일 대여 요금(원), 자동차 옵션 리스트를 나타냅니다.
 
 -- Column name	Type	Nullable
--- HISTORY_ID	INTEGER	FALSE
 -- CAR_ID	INTEGER	FALSE
--- START_DATE	DATE	FALSE
--- END_DATE	DATE	FALSE
+-- CAR_TYPE	VARCHAR(255)	FALSE
+-- DAILY_FEE	INTEGER	FALSE
+-- OPTIONS	VARCHAR(255)	FALSE
+-- 자동차 종류는 '세단', 'SUV', '승합차', '트럭', '리무진' 이 있습니다. 자동차 옵션 리스트는 콤마(',')로 구분된 키워드 리스트(옵션 리스트 값 예시: '열선시트', '스마트키', '주차감지센서')로 되어있으며, 키워드 종류는 '주차감지센서', '스마트키', '네비게이션', '통풍시트', '열선시트', '후방카메라', '가죽시트' 가 있습니다.
+
 -- 문제
--- CAR_RENTAL_COMPANY_RENTAL_HISTORY 테이블에서 2022년 10월 16일에 대여 중인 자동차인 경우 '대여중' 이라고 표시하고, 대여 중이지 않은 자동차인 경우 '대여 가능'을 표시하는 컬럼(컬럼명: AVAILABILITY)을 추가하여 자동차 ID와 AVAILABILITY 리스트를 출력하는 SQL문을 작성해주세요. 이때 반납 날짜가 2022년 10월 16일인 경우에도 '대여중'으로 표시해주시고 결과는 자동차 ID를 기준으로 내림차순 정렬해주세요.
+-- CAR_RENTAL_COMPANY_CAR 테이블에서 '통풍시트', '열선시트', '가죽시트' 중 하나 이상의 옵션이 포함된 자동차가 자동차 종류 별로 몇 대인지 출력하는 SQL문을 작성해주세요. 이때 자동차 수에 대한 컬럼명은 CARS로 지정하고, 결과는 자동차 종류를 기준으로 오름차순 정렬해주세요.
 
 -- 예시
--- 예를 들어 CAR_RENTAL_COMPANY_RENTAL_HISTORY 테이블이 다음과 같다면
+-- 예를 들어 CAR_RENTAL_COMPANY_CAR 테이블이 다음과 같다면
 
--- HISTORY_ID	CAR_ID	START_DATE	END_DATE
--- 1	4	2022-09-27	2022-09-27
--- 2	3	2022-10-03	2022-10-04
--- 3	2	2022-10-05	2022-10-05
--- 4	1	2022-10-11	2022-10-16
--- 5	3	2022-10-13	2022-10-15
--- 6	2	2022-10-15	2022-10-17
--- 2022년 10월 16일에 대여 중인 자동차는 자동차 ID가 1, 2인 자동차이고, 대여 가능한 자동차는 자동차 ID가 3, 4이므로, '대여중' 또는 '대여 가능' 을 표시하는 컬럼을 추가하고, 자동차 ID를 기준으로 내림차순 정렬하면 다음과 같이 나와야 합니다.
+-- CAR_ID	CAR_TYPE	DAILY_FEE	OPTIONS
+-- 1	세단	16000	가죽시트,열선시트,후방카메라
+-- 2	SUV	14000	스마트키,네비게이션,열선시트
+-- 3	SUV	22000	주차감지센서,후방카메라
+-- 4	트럭	35000	주차감지센서,네비게이션,열선시트
+-- 5	SUV	16000	가죽시트,네비게이션,열선시트,후방카메라,주차감지센서
+-- '통풍시트', '열선시트', '가죽시트' 중 하나 이상의 옵션이 포함된 자동차는 자동차 ID가 1, 2, 4, 5인 자동차이고, 자동차 종류 별로 몇 대인지 구하고 자동차 종류를 기준으로 오름차순 정렬하면 다음과 같은 결과가 나와야 합니다.
 
--- CAR_ID	AVAILABILITY
--- 4	대여 가능
--- 3	대여 가능
--- 2	대여중
--- 1	대여중
+-- CAR_TYPE	CARS
+-- SUV	2
+-- 세단	1
+-- 트럭	1
